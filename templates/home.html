@@ -15,6 +15,10 @@
         <input type="text" value="{{book.title}}" name="newtitle">
         <input type="submit" value="Update">
       </form>
+    <form method="POST" action="/books/delete/{{book.title}}">
+      <input type="submit" name="title" value="DELETE">
+
+    </form>
     {% endfor %}
   </body>
 </html>

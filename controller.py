@@ -4,23 +4,19 @@ from flask import render_template
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 from flask import redirect
+from models import db
+from models import Book
+
 
 app = Flask(__name__)
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir, "bookdatabase.db"))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
-db = SQLAlchemy(app)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-
-class Book(db.Model):
-    title = db.Column(db.String(80), unique=True, nullable=False, primary_key=True)
-
-    def __repr__(self):
-        return "<Title: {}>".format(self.title)
-
-
-
+db.init_app(app)
+# db.create_all()
 
 @app.route("/", methods=["GET"])
 def list():
@@ -54,5 +50,17 @@ def update():
     return redirect("/")
 
 
+@app.route("/books/delete/<title>", methods=["POST"])
+def delete(title):
+    book = Book.query.filter_by(title=title).delete(synchronize_session='evaluate')
+    db.session.commit()
+    return redirect("/")
+
+
+
+
+
+
+# DEBUG:
 if __name__ == "__main__":
     app.run(debug=True)
